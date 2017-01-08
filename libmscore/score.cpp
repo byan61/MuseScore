@@ -30,6 +30,7 @@
 #include "xml.h"
 #include "text.h"
 #include "note.h"
+#include "jianpunote.h"
 #include "chord.h"
 #include "rest.h"
 #include "slur.h"
@@ -2057,7 +2058,11 @@ void Score::splitStaff(int staffIdx, int splitPoint)
                               chord->setTrack(dtrack + voice);
                               undoAddElement(chord);
                               }
-                        Note* nnote = new Note(*note);
+                        Note* nnote;
+                        if (note->staff()->isJianpuStaff())
+                              nnote = new JianpuNote(static_cast<JianpuNote&>(*note));
+                        else
+                              nnote = new Note(*note);
                         nnote->setTrack(dtrack + voice);
                         chord->add(nnote);
                         nnote->updateLine();
@@ -4071,7 +4076,11 @@ void Score::changeVoice(int voice)
                         // move note to destination chord
                         if (dstChord) {
                               // create & add new note
-                              Note* newNote = new Note(*note);
+                              Note* newNote;
+                              if (dstChord->staff()->isJianpuStaff())
+                                    newNote = new JianpuNote(static_cast<JianpuNote&>(*note));
+                              else
+                                    newNote = new Note(*note);
                               newNote->setSelected(false);
                               newNote->setParent(dstChord);
                               undoAddElement(newNote);

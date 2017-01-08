@@ -143,6 +143,9 @@ void Stem::spatiumChanged(qreal oldValue, qreal newValue)
 
 void Stem::draw(QPainter* painter) const
       {
+      if (staff() && staff()->isJianpuStaff())
+            return;
+
       // hide if second chord of a cross-measure pair
       if (chord() && chord()->crossMeasure() == CrossMeasure::SECOND)
             return;

@@ -240,6 +240,7 @@ class Staff : public QObject, public ScoreElement {
       bool isPitchedStaff() const      { return staffGroup() == StaffGroup::STANDARD; }
       bool isTabStaff() const          { return staffGroup() == StaffGroup::TAB; }
       bool isDrumStaff() const         { return staffGroup() == StaffGroup::PERCUSSION; }
+      bool isJianpuStaff() const       { return staffGroup() == StaffGroup::JIANPU; }
 
       VeloList& velocities()           { return _velocities;     }
       PitchList& pitchOffsets()        { return _pitchOffsets;   }

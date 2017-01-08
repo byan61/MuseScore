@@ -13,6 +13,7 @@
 #include "accidental.h"
 #include "barline.h"
 #include "beam.h"
+#include "jianpubeam.h"
 #include "box.h"
 #include "chord.h"
 #include "clef.h"
@@ -1149,7 +1150,10 @@ void Score::beamGraceNotes(Chord* mainNote, bool after)
                   else {
                         beam = a1->beam();
                         if (beam == 0 || beam->elements().front() != a1) {
-                              beam = new Beam(this);
+                              if (mainNote->staff()->isJianpuStaff())
+                                    beam = new JianpuBeam(this);
+                              else
+                                    beam = new Beam(this);
                               beam->setGenerated(true);
                               beam->setTrack(mainNote->track());
                               a1->removeDeleteBeam(true);
@@ -1683,7 +1687,7 @@ void Score::updateBarLineSpans(int idx, int linesOld, int linesNew)
                   if(_staff->barLineSpan() == 0)
                         _staff->setBarLineTo( (linesNew-1) * 2);
                   // if new line count is 1, set default From for 1-line staves
-                  else if(linesNew == 1)
+                  else if(linesNew <= 1)
                         _staff->setBarLineFrom(BARLINE_SPAN_1LINESTAFF_FROM);
                   // if old line count was 1, set default From for normal staves
                   else if (linesOld == 1)
@@ -1697,7 +1701,7 @@ void Score::updateBarLineSpans(int idx, int linesOld, int linesNew)
             // if the modified staff is the destination of the current staff bar span:
             if(sIdx + _staff->barLineSpan() - 1 == idx) {
                   // if new line count is 1, set default To for 1-line staves
-                  if(linesNew == 1)
+                  if(linesNew <= 1)
                         _staff->setBarLineTo(BARLINE_SPAN_1LINESTAFF_TO);
                   // if old line count was 1, set default To for normal staves
                   else if (linesOld == 1)
@@ -2328,7 +2332,10 @@ void Score::createBeams(Measure* measure)
                         else {
                               beam = a1->beam();
                               if (beam == 0 || beam->elements().front() != a1) {
-                                    beam = new Beam(this);
+                                    if (stf->isJianpuStaff())
+                                          beam = new JianpuBeam(this);
+                                    else
+                                          beam = new Beam(this);
                                     beam->setGenerated(true);
                                     beam->setTrack(track);
                                     a1->removeDeleteBeam(true);

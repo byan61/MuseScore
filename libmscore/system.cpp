@@ -442,12 +442,12 @@ void System::layout2()
             if (_barLine) {
                   _barLine->setTrack(firstStaffInitialIdx * VOICES);
                   _barLine->setSpan(lastStaffInitialIdx - firstStaffInitialIdx + 1);
-                  if (score()->staff(firstStaffInitialIdx)->lines() == 1)
+                  if (score()->staff(firstStaffInitialIdx)->lines() <= 1)
                         _barLine->setSpanFrom(BARLINE_SPAN_1LINESTAFF_FROM);
                   else
                         _barLine->setSpanFrom(0);
                   int llines = score()->staff(lastStaffInitialIdx)->lines();
-                  int spanTo = llines == 1 ? BARLINE_SPAN_1LINESTAFF_TO : (llines - 1) * 2;
+                  int spanTo = llines <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (llines - 1) * 2;
                   _barLine->setSpanTo(spanTo);
                   _barLine->layout();
                   }

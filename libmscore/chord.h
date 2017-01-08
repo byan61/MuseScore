@@ -36,6 +36,7 @@ class Chord;
 class StemSlash;
 class LedgerLine;
 class AccidentalState;
+class StaffFactory;
 
 enum class TremoloChordType : char { TremoloSingle, TremoloFirstNote, TremoloSecondNote };
 enum class PlayEventType : char    {
@@ -72,6 +73,8 @@ class Chord : public ChordRest {
       Q_PROPERTY(Ms::StemSlash* stemSlash               READ stemSlash)
       Q_PROPERTY(int stemDirection                      READ stemDirection)
 
+      friend class JianpuChord;
+
       std::vector<Note*>   _notes;       // sorted to decreasing line step
       LedgerLine*          _ledgerLines; // single linked list
 
@@ -106,12 +109,12 @@ class Chord : public ChordRest {
 
    public:
       Chord(Score* s = 0);
-      Chord(const Chord&, bool link = false);
+      Chord(const Chord&, bool link = false, StaffFactory* fac = nullptr);
       ~Chord();
       Chord &operator=(const Chord&) = delete;
 
-      virtual Chord* clone() const       { return new Chord(*this, false); }
-      virtual Element* linkedClone()     { return new Chord(*this, true); }
+      virtual Chord* clone() const       { return new Chord(*this, false, nullptr); }
+      virtual Element* linkedClone()     { return new Chord(*this, true, nullptr); }
       virtual void undoUnlink() override;
 
       virtual void setScore(Score* s);

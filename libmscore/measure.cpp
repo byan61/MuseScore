@@ -3127,8 +3127,8 @@ void Measure::barLinesSetSpan(Segment* seg)
 
                         else if (staff->show()) {
                               span        = 1;
-                              spanFrom    = staffLines == 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0;
-                              spanTo      = staffLines == 1 ? BARLINE_SPAN_1LINESTAFF_TO : (staff->lines() - 1) * 2;
+                              spanFrom    = staffLines <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0;
+                              spanTo      = staffLines <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (staff->lines() - 1) * 2;
                               }
                         }
                   if (!staff->show()) {
@@ -3144,7 +3144,7 @@ void Measure::barLinesSetSpan(Segment* seg)
                   }
             else if (spanFrom == unknownSpanFrom && staff->show()) {
                   // we started a span earlier, but had not found a valid staff yet
-                  spanFrom = staffLines == 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0;
+                  spanFrom = staffLines <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0;
                   }
             if (staff->show() && span) {
                   //
@@ -3211,7 +3211,7 @@ void Measure::barLinesSetSpan(Segment* seg)
                               bl->setSpanFrom(spanFrom);
                               // if current actual span < target span, set spanTo to full staff height
                               if (aspan < spanTot && staffIdx < lastIdx)
-                                    bl->setSpanTo(staffLines == 1 ? BARLINE_SPAN_1LINESTAFF_TO : (staffLines - 1) * 2);
+                                    bl->setSpanTo(staffLines <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (staffLines - 1) * 2);
                               // if we reached target span, set spanTo to intended value
                               else
                                     bl->setSpanTo(spanTo);

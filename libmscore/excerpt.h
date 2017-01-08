@@ -13,6 +13,8 @@
 #ifndef __EXCERPT_H__
 #define __EXCERPT_H__
 
+#include "element.h"
+
 namespace Ms {
 
 class MasterScore;
@@ -42,6 +44,9 @@ class Excerpt : public QObject {
       QString _title;
       QList<Part*> _parts;
       QMultiMap<int, int> _tracks;
+
+      /// Make and return a (linked) clone of srcElement for dstStaff.
+      static Element* makeClone(StaffGroup dstStaff, Element* srcElement, bool link = false);
 
    public:
       Excerpt(MasterScore* s = 0)          { _oscore = s;       }

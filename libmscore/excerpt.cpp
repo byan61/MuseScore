@@ -41,6 +41,8 @@
 #include "tremolo.h"
 #include "barline.h"
 #include "undo.h"
+#include "stafffactory.h"
+#include "jianpufactory.h"
 
 namespace Ms {
 
@@ -764,6 +766,16 @@ void Excerpt::cloneStaves(Score* oscore, Score* score, const QList<int>& map, QM
             }
       }
 
+Element* Excerpt::makeClone(StaffGroup dstStaff, Element* srcElement, bool link)
+      {
+      if (dstStaff == StaffGroup::JIANPU) {
+            StaffFactory* fac = JianpuFactory::instance();
+            return fac->cloneElement(srcElement, link);
+            }
+      else
+            return srcElement->linkedClone();
+      }
+
 //---------------------------------------------------------
 //   cloneStaff
 //    staves are in same score
@@ -802,8 +814,10 @@ void Excerpt::cloneStaff(Staff* srcStaff, Staff* dstStaff)
                                     ne = oe->clone();
                                     }
                               }
-                        else
-                              ne = oe->linkedClone();
+                        else {
+                              //ne = oe->linkedClone();
+                              ne = makeClone(dstStaff->staffGroup(), oe, true);
+                              }
                         if (ne) {
                               ne->setTrack(dstTrack);
                               ne->setParent(seg);

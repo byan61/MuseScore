@@ -197,7 +197,9 @@ QString Staff::partName() const
 Staff::Staff(Score* s)
   : ScoreElement(s)
       {
-      _barLineTo = (lines() - 1) * 2;
+      int lineCount = lines();
+      _barLineFrom = lineCount <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0;
+      _barLineTo = lineCount <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (lineCount - 1) * 2;
       }
 
 //---------------------------------------------------------
@@ -542,7 +544,7 @@ void Staff::write(Xml& xml) const
             xml.tagE(QString("bracket type=\"%1\" span=\"%2\"").arg((signed char)(i._bracket)).arg(i._bracketSpan));
 
       // for economy and consistency, only output "from" and "to" attributes if different from default
-      int defaultLineFrom = (lines() == 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
+      int defaultLineFrom = (lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
       int defaultLineTo;
       if (_barLineSpan == 0)                    // if no bar line at all
             defaultLineTo = _barLineTo;         // whatever the current spanTo is, use as default
@@ -554,7 +556,7 @@ void Staff::write(Xml& xml) const
                   targetStaffIdx = score()->nstaves() - 1;
                   }
             int targetStaffLines = score()->staff(targetStaffIdx)->lines();
-            defaultLineTo = (targetStaffLines == 1 ? BARLINE_SPAN_1LINESTAFF_TO : (targetStaffLines-1) * 2);
+            defaultLineTo = (targetStaffLines <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (targetStaffLines-1) * 2);
             }
       if (_barLineSpan != 1 || _barLineFrom != defaultLineFrom || _barLineTo != defaultLineTo) {
             if (_barLineFrom != defaultLineFrom || _barLineTo != defaultLineTo)
@@ -588,15 +590,15 @@ void Staff::read(XmlReader& e)
                   _staffType = *StaffType::preset(StaffTypes(staffTypeIdx));
                   // set default barLineFrom and barLineTo according to staff type num. of lines
                   // (1-line staff bar lines are special)
-                  _barLineFrom = (lines() == 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
-                  _barLineTo   = (lines() == 1 ? BARLINE_SPAN_1LINESTAFF_TO   : (lines() - 1) * 2);
+                  _barLineFrom = (lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
+                  _barLineTo   = (lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_TO   : (lines() - 1) * 2);
                   }
             else if (tag == "StaffType") {
                   _staffType.read(e);
                   // set default barLineFrom and barLineTo according to staff type num. of lines
                   // (1-line staff bar lines are special)
-                  _barLineFrom = (lines() == 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
-                  _barLineTo   = (lines() == 1 ? BARLINE_SPAN_1LINESTAFF_TO   : (lines() - 1) * 2);
+                  _barLineFrom = (lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_FROM : 0);
+                  _barLineTo   = (lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_TO   : (lines() - 1) * 2);
                   }
             else if (tag == "defaultClef") {           // sets both default transposing and concert clef
                   QString val(e.readElementText());
@@ -656,7 +658,7 @@ void Staff::read(XmlReader& e)
                   // if span to another staff (yet to be read), leave as unknown
                   // (Score::read() will retrieve the correct height of the target staff)
                   if (_barLineTo == UNKNOWN_BARLINE_TO && _barLineSpan <= 1)
-                        _barLineTo = lines() == 1 ? BARLINE_SPAN_1LINESTAFF_TO : (lines() - 1) * 2;
+                        _barLineTo = lines() <= 1 ? BARLINE_SPAN_1LINESTAFF_TO : (lines() - 1) * 2;
                   }
             else if (tag == "distOffset")
                   _userDist = e.readDouble() * score()->spatium();
@@ -706,7 +708,7 @@ void Staff::read(XmlReader& e)
 
 qreal Staff::height() const
       {
-      return (lines() == 1 ? 2 : lines()-1) * spatium() * _staffType.lineDistance().val();
+      return (lines() <= 1 ? 2 : lines()-1) * spatium() * _staffType.lineDistance().val();
       }
 
 //---------------------------------------------------------
@@ -990,7 +992,7 @@ void Staff::setStaffType(const StaffType* st)
       if (linesNew != linesOld) {
             int sIdx = this->idx();
             if (sIdx < 0) {                     // staff does not belong to score (yet?)
-                  if (linesNew == 1) {          // 1-line staves have special bar lines
+                  if (linesNew <= 1) {          // 1-line staves have special bar lines
                         _barLineFrom = BARLINE_SPAN_1LINESTAFF_FROM;
                         _barLineTo   = BARLINE_SPAN_1LINESTAFF_TO;
                   }

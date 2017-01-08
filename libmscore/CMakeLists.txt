@@ -68,6 +68,8 @@ add_library (
       bagpembell.cpp ambitus.cpp keylist.cpp scoreElement.cpp
       shape.cpp systemdivider.cpp midimapping.cpp
       read114.cpp read206.cpp read300.cpp
+      jianpufactory.cpp jianpuchord.cpp jianpunote.cpp jianpurest.cpp 
+      jianpuhook.cpp jianpubeam.cpp 
       )
 
 set_target_properties (
